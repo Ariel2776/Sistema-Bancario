@@ -13,7 +13,7 @@ public class Cliente {
         this.sexo = sexo;
         this.email = email;
         this.senha = senha;
-    }
+    }//fim cliente
 
     // GetSet
     public String getCpf() {

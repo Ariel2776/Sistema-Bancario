@@ -6,7 +6,7 @@ public class Banco {
     private static ArrayList<Cliente> clientes = new ArrayList<>();
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner ler = new Scanner(System.in);
         int opcao;
 
         do {
@@ -15,15 +15,15 @@ public class Banco {
             System.out.println("2. Fazer login");
             System.out.println("3. Sair");
             System.out.print("Opção: ");
-            opcao = scanner.nextInt();
-            scanner.nextLine(); // Limpa o buffer
+            opcao = ler.nextInt();
+            ler.nextLine();
 
             switch (opcao) {
                 case 1:
-                    criarNovaConta(scanner);
+                    criarNovaConta(ler);
                     break;
                 case 2:
-                    fazerLogin(scanner);
+                    fazerLogin(ler);
                     break;
                 case 3:
                     System.out.println("Saindo do sistema.");
@@ -34,62 +34,85 @@ public class Banco {
             }
         } while (opcao != 3);
 
-        scanner.close();
+        ler.close();
     }
 
-    // Método para criar uma nova conta
-    private static void criarNovaConta(Scanner scanner) {
+    //Criar Nova conta
+    private static void criarNovaConta(Scanner ler) {
+        //Validar CPF
         System.out.print("Digite o CPF: ");
-        String cpf = scanner.nextLine();
-        System.out.print("Digite o nome completo: ");
-        String nomeCompleto = scanner.nextLine();
-        System.out.print("Digite a data de nascimento (dd/mm/yyyy): ");
-        String dataNascimento = scanner.nextLine();
-        System.out.print("Digite o sexo (M/F): ");
-        String sexo = scanner.nextLine();
-        System.out.print("Digite o e-mail: ");
-        String email = scanner.nextLine();
-        System.out.print("Digite a senha: ");
-        String senha = scanner.nextLine();
-        System.out.print("Digite o saldo inicial: R$ ");
-        double saldoInicial = scanner.nextDouble();
-        scanner.nextLine(); // Limpa o buffer
 
-        Cliente novoCliente = new Cliente(cpf, nomeCompleto, dataNascimento, sexo, email, senha);
+        String CPF = ler.nextLine();
+        if (CPF.length() == 11 && CPF.matches("\\d+")) {
+            String CPFformatado = CPF.substring(0, 3) + "." 
+                                + CPF.substring(3, 6) + "." 
+                                + CPF.substring(6, 9) + "-" 
+                                + CPF.substring(9, 11);
+            System.out.println("CPF " + CPFformatado + " é válido.");
+        }//fim if
+         else {
+            System.out.println("CPF inválido. Deve conter 11 dígitos numéricos.");
+            return;  //Encerrar se CPF inválido
+         }//fim else
+        System.out.print("Digite o nome completo: ");
+        String nomeCompleto = ler.nextLine();
+        System.out.print("Digite a data de nascimento (dd/mm/yyyy): ");
+        String dataNascimento = ler.nextLine();
+        String sexo;    
+        
+        do {
+            System.out.print("Digite o sexo (M/F ou masculino/feminino): ");
+            sexo = ler.nextLine().toLowerCase();
+            if (sexo.equals("m") || sexo.equals("f") || sexo.equals("masculino") || sexo.equals("feminino")) {
+                break;
+            } else {
+                System.out.println("Entrada inválida. Por favor, digite M, F, masculino ou feminino.");
+            }
+        } while (true);
+
+        System.out.print("Digite o e-mail: ");
+        String email = ler.nextLine();
+        System.out.print("Digite a senha: ");
+        String senha = ler.nextLine();
+        System.out.print("Digite o saldo inicial: R$ ");
+        double saldoInicial = ler.nextDouble();
+        ler.nextLine(); 
+
+        Cliente novoCliente = new Cliente(CPF, nomeCompleto, dataNascimento, sexo, email, senha);
         Conta novaConta = new Conta(novoCliente, saldoInicial);
         clientes.add(novoCliente);
         contas.add(novaConta);
         System.out.println("Conta criada com sucesso para " + nomeCompleto + ".");
-    }
+    }//fim Criar Conta
 
-    // Método para fazer login
-    private static void fazerLogin(Scanner scanner) {
+    //FazerLogin
+    private static void fazerLogin(Scanner ler) {
         System.out.println("Escolha a opção de login:");
         System.out.println("1. Login com CPF");
         System.out.println("2. Login com e-mail");
-        int opcao = scanner.nextInt();
-        scanner.nextLine(); // Limpa o buffer
+        int opcao = ler.nextInt();
+        ler.nextLine();
 
         Cliente clienteLogado = null;
         String senha;
 
         if (opcao == 1) {
             System.out.print("Digite o CPF: ");
-            String cpf = scanner.nextLine();
-            clienteLogado = encontrarClientePorCPF(cpf);
+            String CPF = ler.nextLine();
+            clienteLogado = encontrarClientePorCPF(CPF);
 
         } else if (opcao == 2) {
             System.out.print("Digite o e-mail: ");
-            String email = scanner.nextLine();
+            String email = ler.nextLine();
             clienteLogado = encontrarClientePorEmail(email);
         }
 
         if (clienteLogado != null) {
             System.out.print("Digite a senha: ");
-            senha = scanner.nextLine();
+            senha = ler.nextLine();
             if (clienteLogado.getSenha().equals(senha)) {
                 System.out.println("Login realizado com sucesso!");
-                menuConta(scanner, encontrarContaPorCliente(clienteLogado));
+                menuConta(ler, encontrarContaPorCliente(clienteLogado));
             } else {
                 System.out.println("Senha incorreta.");
             }
@@ -98,8 +121,8 @@ public class Banco {
         }
     }
 
-    // Método para menu da conta
-    private static void menuConta(Scanner scanner, Conta conta) {
+    //Menu da conta
+    private static void menuConta(Scanner ler, Conta conta) {
         int opcao;
         do {
             System.out.println("\nMenu da Conta:");
@@ -109,21 +132,21 @@ public class Banco {
             System.out.println("4. Transferência");
             System.out.println("5. Sair");
             System.out.print("Escolha uma opção: ");
-            opcao = scanner.nextInt();
-            scanner.nextLine(); // Limpa o buffer
+            opcao = ler.nextInt();
+            ler.nextLine();
 
             switch (opcao) {
                 case 1:
-                    realizarDeposito(scanner, conta);
+                    realizarDeposito(ler, conta);
                     break;
                 case 2:
-                    realizarSaque(scanner, conta);
+                    realizarSaque(ler, conta);
                     break;
                 case 3:
                     conta.consultarSaldo();
                     break;
                 case 4:
-                    realizarTransferencia(scanner, conta);
+                    realizarTransferencia(ler, conta);
                     break;
                 case 5:
                     System.out.println("Saindo do menu da conta.");
@@ -135,7 +158,7 @@ public class Banco {
         } while (opcao != 5);
     }
 
-    // Método para encontrar cliente por CPF
+    //Encontrar cliente por CPF
     private static Cliente encontrarClientePorCPF(String cpf) {
         for (Cliente cliente : clientes) {
             if (cliente.getCpf().equals(cpf)) {
@@ -143,9 +166,9 @@ public class Banco {
             }
         }
         return null;
-    }
+    }//fim Encontrar Cliente
 
-    // Método para encontrar cliente por e-mail
+    //Encontrar cliente por e-mail
     private static Cliente encontrarClientePorEmail(String email) {
         for (Cliente cliente : clientes) {
             if (cliente.getEmail().equals(email)) {
@@ -153,9 +176,9 @@ public class Banco {
             }
         }
         return null;
-    }
+    }//fim ClienteEmail
 
-    // Método para encontrar conta associada ao cliente
+    //Encontrar conta associada ao cliente
     private static Conta encontrarContaPorCliente(Cliente cliente) {
         for (Conta conta : contas) {
             if (conta.getCliente().equals(cliente)) {
@@ -165,26 +188,25 @@ public class Banco {
         return null;
     }
 
-    // Método para realizar um depósito
-    private static void realizarDeposito(Scanner scanner, Conta conta) {
+    //Realizar um depósito
+    private static void realizarDeposito(Scanner ler, Conta conta) {
         System.out.print("Digite o valor do depósito: R$ ");
-        double valor = scanner.nextDouble();
+        double valor = ler.nextDouble();
         conta.depositar(valor);
     }
 
-    // Método para realizar um saque
-    private static void realizarSaque(Scanner scanner, Conta conta) {
+    //Realizar um saque
+    private static void realizarSaque(Scanner ler, Conta conta) {
         System.out.print("Digite o valor do saque: R$ ");
-        double valor = scanner.nextDouble();
+        double valor = ler.nextDouble();
         conta.sacar(valor);
     }
 
-    // Método para realizar uma transferência
-    private static void realizarTransferencia(Scanner scanner, Conta contaOrigem) {
+    //Realizar uma transferência
+    private static void realizarTransferencia(Scanner ler, Conta contaOrigem) {
         System.out.print("Digite o nome do cliente da conta de destino: ");
-        String nomeClienteDestino = scanner.nextLine();
+        String nomeClienteDestino = ler.nextLine();
         Conta contaDestino = encontrarContaPorCliente(encontrarClientePorEmail(nomeClienteDestino));
 
     }
-}
-        
+}//fim class
