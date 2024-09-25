@@ -161,7 +161,7 @@ public class Banco {
     //Encontrar cliente por CPF
     private static Cliente encontrarClientePorCPF(String cpf) {
         for (Cliente cliente : clientes) {
-            if (cliente.getCpf().equals(cpf)) {
+            if (cliente.getCpf().equals(CPF)) {
                 return cliente;
             }
         }
